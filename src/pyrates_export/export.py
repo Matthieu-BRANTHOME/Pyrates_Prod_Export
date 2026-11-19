@@ -157,7 +157,7 @@ def _write_segment(conn, segment: Segment, tmp_path: Path, chunk_size: int) -> i
     try:
         cursor.execute(export_query(), (segment.start, segment.end))
         schema = arrow_schema(cursor.description, segment)
-        writer = pq.ParquetWriter(tmp_path, schema, compression="zstd")
+        writer = pq.ParquetWriter(tmp_path, schema, compression="snappy")
         while True:
             rows = cursor.fetchmany(chunk_size)
             if not rows:
@@ -293,7 +293,7 @@ def merge_segments(traces_dir: Path, out_path: Path | None = None) -> tuple[Path
     tmp_path = out_path.with_name(out_path.name + ".tmp")
     row_count = 0
     try:
-        with pq.ParquetWriter(tmp_path, schema, compression="zstd") as writer:
+        with pq.ParquetWriter(tmp_path, schema, compression="snappy") as writer:
             for path in files:
                 for batch in pq.ParquetFile(path).iter_batches():
                     table = pa.Table.from_batches([batch]).cast(schema)
