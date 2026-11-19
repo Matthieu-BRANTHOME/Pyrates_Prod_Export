@@ -134,7 +134,25 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     config.load_env()
     args = build_parser().parse_args(argv)
-    args.func(args)
+    import pymysql
+
+    try:
+        args.func(args)
+    except pymysql.err.OperationalError as exc:
+        code = exc.args[0] if exc.args else None
+        if code == 2003:
+            hint = (
+                "The server did not answer on the MySQL port. Check MYSQL_HOST and"
+                " MYSQL_PORT, and that your public IP is whitelisted for remote MySQL."
+            )
+        elif code == 1045:
+            hint = (
+                "The server refused the credentials. Check MYSQL_USER and"
+                " MYSQL_PASSWORD (quote the password in .env if it contains # or spaces)."
+            )
+        else:
+            hint = "Check the settings in .env."
+        raise SystemExit(f"Database error: {exc}\n{hint}") from None
 
 
 if __name__ == "__main__":

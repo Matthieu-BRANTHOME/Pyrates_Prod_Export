@@ -25,7 +25,11 @@ def export_query() -> str:
     return (
         f"SELECT {', '.join(f'`{c}`' for c in TRACE_COLUMNS)} "
         f"FROM {traces_view()} "
-        f"WHERE `date` >= %s AND `date` < %s AND {VALID_GAME_FILTER}"
+        f"WHERE `date` >= %s AND `date` < %s AND {VALID_GAME_FILTER} "
+        # Reading in primary-key order replaces the view's own ORDER BY date,
+        # which would force the server to sort the whole result before sending
+        # the first row.
+        f"ORDER BY `id`"
     )
 
 

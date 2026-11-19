@@ -78,8 +78,8 @@ Notes on the files:
   seconds (float), because Parquet has no duration type.
 - Text columns are stored as-is. In particular `code` keeps its newlines,
   tabs and trailing whitespace exactly.
-- Row order inside a file is not guaranteed; sort by `date` and `id` when
-  the order matters.
+- Rows are sorted by `id` inside each monthly file. Sort by `date` when the
+  chronological order matters.
 - Each file records the date range it covers in its Parquet metadata
   (`range_start` inclusive, `range_end` exclusive).
 
