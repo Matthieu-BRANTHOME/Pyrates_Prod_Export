@@ -1,0 +1,23 @@
+# Credentials
+.env
+
+# Exported data and logs (never commit: size and privacy)
+data/
+logs/
+*.parquet
+*.parquet.tmp
+*.csv
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
