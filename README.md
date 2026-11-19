@@ -112,7 +112,40 @@ This is the basis for choosing the event that reliably marks the completion
 of a level. Selecting the games that passed level 1 is a separate step that
 is not implemented yet.
 
+## About the Parquet format
+
+Parquet is an open file format (an Apache project) for storing tables of
+data. It plays the same role as CSV, but it is binary and designed for
+analysis. pandas, DuckDB, R, Spark and most data tools read it natively.
+
+How it differs from CSV:
+
+- **Typed**: each column has a type stored in the file (integer, date,
+  text...). When read back, a date is a date and an empty value is a real
+  NULL; nothing has to be re-parsed.
+- **Columnar**: data is stored column by column rather than row by row. A tool
+  can read only `game_id` and `level_id` without loading the `code` column,
+  which is much faster on tens of millions of rows.
+- **Compressed**: a Parquet file is typically 5 to 10 times smaller than the
+  equivalent CSV.
+- **No text ambiguity**: there is no separator or quoting to escape, so the
+  newlines in the `code` column are preserved exactly.
+
+The trade-off is that a Parquet file cannot be opened in a text editor or
+directly in Excel. To get a CSV for another tool, convert it with pandas
+(install pandas first with `pip install pandas`):
+
+```python
+import pandas as pd
+
+traces = pd.read_parquet("data/traces/traces_2025-01.parquet")
+traces.to_csv("traces_2025-01.csv", index=False)
+```
+
 ## Reading the data
+
+The examples below need pandas (`pip install pandas`) or DuckDB (already
+installed with this project).
 
 ```python
 import pandas as pd
